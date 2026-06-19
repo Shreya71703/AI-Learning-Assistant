@@ -1,3 +1,12 @@
+---
+title: AI Learning Assistant
+emoji: 🎓
+colorFrom: blue
+colorTo: purple
+sdk: docker
+pinned: false
+---
+
 # 🎓 AI Learning Assistant
 
 An AI-powered study tool that lets you upload PDFs and instantly generate flashcards, quizzes, summaries, and personalized study plans — all with **sub-second response times**.
