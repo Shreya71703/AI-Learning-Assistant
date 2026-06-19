@@ -1,5 +1,9 @@
 from contextlib import asynccontextmanager
+import os
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from api.upload import router as upload_router
 from api.ask import router as ask_router
@@ -67,10 +71,31 @@ app.include_router(summary_router, prefix="/api", tags=["summary"])
 app.include_router(studyplan_router, prefix="/api", tags=["studyplan"])
 
 
+# Serve static frontend in production
+frontend_dist = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
+if os.path.isdir(frontend_dist):
+    app.mount("/assets", StaticFiles(directory=os.path.join(frontend_dist, "assets")), name="assets")
+    
+    @app.get("/{full_path:path}")
+    async def serve_frontend(full_path: str):
+        # Allow API routes to pass through
+        if full_path.startswith("api/") or full_path.startswith("docs") or full_path.startswith("openapi.json"):
+            return None
+        
+        # Check if the requested file exists
+        file_path = os.path.join(frontend_dist, full_path)
+        if os.path.isfile(file_path):
+            return FileResponse(file_path)
+            
+        # Fallback to index.html for React Router
+        return FileResponse(os.path.join(frontend_dist, "index.html"))
+
 @app.get("/")
 def root():
+    if os.path.isdir(frontend_dist) and os.path.isfile(os.path.join(frontend_dist, "index.html")):
+        return FileResponse(os.path.join(frontend_dist, "index.html"))
     return {
-        "message": "AI Learning Assistant v2.0 Running",
+        "message": "AI Learning Assistant v2.0 Running (API only)",
         "docs": "/docs",
         "status": "healthy"
     }

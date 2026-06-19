@@ -7,7 +7,7 @@ from typing import Tuple
 TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 POPPLER_PATH = r"C:\poppler\poppler-26.02.0\Library\bin"
 
-if os.path.exists(TESSERACT_PATH):
+if os.name == "nt" and os.path.exists(TESSERACT_PATH):
     pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
 
 def extract_text_from_pdf(pdf_path: str) -> Tuple[str, int]:
