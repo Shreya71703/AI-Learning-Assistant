@@ -4,6 +4,23 @@ from models.schemas import FlashcardRequest, FlashcardsResponse, Flashcard
 
 router = APIRouter()
 
+def is_clean_text(text: str) -> bool:
+    """Return True only if text looks like real English (not garbled OCR)."""
+    if not text or len(text) < 3:
+        return False
+    words = text.split()
+    if not words:
+        return False
+    # Reject if average word length is suspiciously short (OCR gibberish)
+    avg_word_len = sum(len(w) for w in words) / len(words)
+    if avg_word_len < 2.5:
+        return False
+    # Reject if more than 40% of characters are non-alphanumeric
+    alnum = sum(1 for c in text if c.isalnum())
+    if len(text) > 0 and alnum / len(text) < 0.6:
+        return False
+    return True
+
 @router.post("/flashcards", response_model=FlashcardsResponse)
 async def generate_flashcards(request: FlashcardRequest):
     if request.document_id:
@@ -39,7 +56,7 @@ async def generate_flashcards(request: FlashcardRequest):
                 if idx != -1:
                     term = s[:idx].strip()
                     defn = s[idx + len(indicator):].strip()
-                    if 2 < len(term) < 50 and len(defn) > 10:
+                    if 2 < len(term) < 50 and len(defn) > 10 and is_clean_text(term) and is_clean_text(defn):
                         front = f"What is {term}?"
                         if front not in seen_fronts:
                             seen_fronts.add(front)

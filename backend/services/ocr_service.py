@@ -1,4 +1,5 @@
 import os
+import re
 import pytesseract
 from pypdf import PdfReader
 from pdf2image import convert_from_path
@@ -37,7 +38,7 @@ def extract_text_from_pdf(pdf_path: str) -> Tuple[str, int]:
     try:
         pages = convert_from_path(
             pdf_path,
-            dpi=150,  # Reduced DPI to speed up OCR slightly
+            dpi=300,  # Higher DPI = much better OCR accuracy
             poppler_path=POPPLER_PATH if os.name == "nt" else None
         )
     except Exception as e:
@@ -49,11 +50,45 @@ def extract_text_from_pdf(pdf_path: str) -> Tuple[str, int]:
             text = pytesseract.image_to_string(
                 page_image,
                 lang="eng",
-                config="--psm 6"
+                config="--psm 3 --oem 1"  # psm 3 = auto layout, oem 1 = LSTM neural net
             )
             if text.strip():
                 all_text.append(f"[Page {i + 1}]\n{text.strip()}")
         except Exception as e:
             all_text.append(f"[Page {i + 1}] OCR failed: {str(e)}")
 
-    return "\n\n".join(all_text), len(pages)
+    return clean_ocr_text("\n\n".join(all_text)), len(pages)
+
+
+def clean_ocr_text(text: str) -> str:
+    """
+    Clean up common OCR errors:
+    - Remove lines that are mostly garbage (very short random tokens)
+    - Fix broken spacing
+    - Remove non-printable characters
+    """
+    if not text:
+        return text
+
+    lines = text.split("\n")
+    cleaned_lines = []
+    for line in lines:
+        line = line.strip()
+        # Skip lines that are clearly OCR garbage:
+        # - Less than 3 characters
+        # - More than 60% non-alphanumeric characters
+        if not line:
+            cleaned_lines.append("")
+            continue
+        alnum_count = sum(1 for c in line if c.isalnum())
+        if len(line) < 3:
+            continue
+        if len(line) > 3 and alnum_count / len(line) < 0.4:
+            continue
+        cleaned_lines.append(line)
+
+    # Join and fix multiple spaces/newlines
+    result = "\n".join(cleaned_lines)
+    result = re.sub(r" {2,}", " ", result)      # multiple spaces -> single
+    result = re.sub(r"\n{3,}", "\n\n", result)  # 3+ newlines -> double
+    return result.strip()
