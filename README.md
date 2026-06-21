@@ -21,15 +21,6 @@ An AI-powered study tool that lets you upload PDFs and instantly generate flashc
 ![HuggingFace](https://img.shields.io/badge/Deployed%20on-HuggingFace-yellow)
 
 
-An AI-powered study tool that lets you upload PDFs and instantly generate flashcards, quizzes, summaries, and personalized study plans — all with **sub-second response times**.
-
-![Tech Stack](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)
-![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector%20DB-orange)
-![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
-
----
-
 ## ✨ Features
 
 | Feature | Description |
