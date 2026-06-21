@@ -1,8 +1,17 @@
 const BASE_URL = import.meta.env.PROD ? "/api" : "http://127.0.0.1:8001/api";
 
+function getAuthHeaders() {
+  const token = localStorage.getItem("ai_token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 async function request(endpoint, options = {}) {
   const res = await fetch(`${BASE_URL}${endpoint}`, {
-    headers: { "Content-Type": "application/json", ...options.headers },
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+      ...options.headers,
+    },
     ...options,
   });
   if (!res.ok) {

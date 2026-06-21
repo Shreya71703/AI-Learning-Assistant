@@ -1,48 +1,27 @@
 import { useState } from "react";
 import { api } from "../utils/api";
-
-function Flashcard({ card }) {
-  const [flipped, setFlipped] = useState(false);
-  return (
-    <div 
-      className={`flashcard ${flipped ? "flipped" : ""}`} 
-      onClick={() => setFlipped(!flipped)}
-    >
-      <div className="flashcard-inner">
-        <div className="flashcard-front">
-          <div className="flashcard-label">Question</div>
-          <div className="flashcard-text">{card.front}</div>
-          <div className="flashcard-topic">{card.topic}</div>
-          <div className="flashcard-flip-hint">Tap to reveal answer 🔄</div>
-        </div>
-        <div className="flashcard-back">
-          <div className="flashcard-label">Answer</div>
-          <div className="flashcard-text">{card.back}</div>
-          <div className="flashcard-topic">{card.topic}</div>
-          <div className="flashcard-flip-hint">Tap to see question 🔄</div>
-        </div>
-      </div>
-    </div>
-  );
-}
+import Flashcard from "../components/Flashcard";
 
 export default function FlashcardsPage({ doc, hasDocs }) {
   const [numCards, setNumCards] = useState(10);
   const [cards, setCards] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [viewMode, setViewMode] = useState("navigate"); // "navigate" | "grid"
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   async function generate() {
-    setLoading(true); 
-    setError(""); 
+    setLoading(true);
+    setError("");
     setCards(null);
+    setCurrentIndex(0);
     try {
       const res = await api.generateFlashcards(numCards, doc?.document_id);
       setCards(res);
-    } catch (e) { 
-      setError(e.message || "Failed to generate flashcards."); 
-    } finally { 
-      setLoading(false); 
+    } catch (e) {
+      setError(e.message || "Failed to generate flashcards.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -55,7 +34,7 @@ export default function FlashcardsPage({ doc, hasDocs }) {
         </div>
         {hasDocs && (
           <div className={`focus-badge ${doc ? "focus-doc" : "focus-all"}`}>
-            <span className="dot"></span>
+            <span className="dot" />
             <span className="focus-label">
               Focus: {doc ? doc.filename : "All files"}
             </span>
@@ -75,18 +54,42 @@ export default function FlashcardsPage({ doc, hasDocs }) {
             <div className="card-header">
               <span className="card-title">⚙️ Settings</span>
             </div>
-            <div className="form-group" style={{ marginBottom: 16 }}>
-              <label className="form-label">Number of flashcards</label>
-              <select 
-                className="form-select" 
-                style={{ maxWidth: 200 }} 
-                value={numCards} 
-                onChange={(e) => setNumCards(+e.target.value)}
-              >
-                {[5, 10, 15, 20].map((n) => <option key={n} value={n}>{n} cards</option>)}
-              </select>
+            <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "flex-end" }}>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label">Number of flashcards</label>
+                <select
+                  id="flashcard-count-select"
+                  className="form-select"
+                  style={{ maxWidth: 200 }}
+                  value={numCards}
+                  onChange={(e) => setNumCards(+e.target.value)}
+                >
+                  {[5, 10, 15, 20].map((n) => (
+                    <option key={n} value={n}>{n} cards</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label">View mode</label>
+                <select
+                  id="flashcard-view-select"
+                  className="form-select"
+                  style={{ maxWidth: 200 }}
+                  value={viewMode}
+                  onChange={(e) => setViewMode(e.target.value)}
+                >
+                  <option value="navigate">Navigate one by one</option>
+                  <option value="grid">Grid view (all cards)</option>
+                </select>
+              </div>
             </div>
-            <button className="btn btn-primary" onClick={generate} disabled={loading}>
+            <button
+              id="generate-flashcards-btn"
+              className="btn btn-primary"
+              style={{ marginTop: 16 }}
+              onClick={generate}
+              disabled={loading}
+            >
               {loading ? (
                 <>
                   <div className="spinner" style={{ marginRight: 6 }} /> Generating...
@@ -103,11 +106,24 @@ export default function FlashcardsPage({ doc, hasDocs }) {
         {cards && (
           <>
             <div style={{ marginBottom: 16, fontSize: 13, color: "var(--text2)", fontWeight: 500 }}>
-              {cards.total} Flashcards generated · click on any card to flip it
+              {cards.total} flashcard{cards.total !== 1 ? "s" : ""} generated
+              {viewMode === "navigate" ? " · use the buttons below to navigate" : " · click any card to flip it"}
             </div>
-            <div className="flashcard-grid">
-              {cards.flashcards.map((c, i) => <Flashcard key={i} card={c} />)}
-            </div>
+
+            {viewMode === "navigate" ? (
+              <Flashcard
+                cards={cards.flashcards}
+                index={currentIndex}
+                onPrev={() => setCurrentIndex((i) => Math.max(0, i - 1))}
+                onNext={() => setCurrentIndex((i) => Math.min(cards.flashcards.length - 1, i + 1))}
+              />
+            ) : (
+              <div className="flashcard-grid">
+                {cards.flashcards.map((c, i) => (
+                  <Flashcard key={i} card={c} />
+                ))}
+              </div>
+            )}
           </>
         )}
       </div>

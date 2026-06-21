@@ -5,22 +5,24 @@ import QuizPage from "./pages/QuizPage";
 import FlashcardsPage from "./pages/FlashcardsPage";
 import SummaryPage from "./pages/SummaryPage";
 import StudyPlanPage from "./pages/StudyPlanPage";
+import LoginPage from "./pages/LoginPage";
 import UploadBanner from "./components/UploadBanner";
 import { api } from "./utils/api";
+import { isLoggedIn, logout, getUsername } from "./utils/auth";
 import "./styles/global.css";
 
 export default function App() {
+  const [loggedIn, setLoggedIn] = useState(isLoggedIn());
   const [activePage, setActivePage] = useState("chat");
-  const [uploadedDoc, setUploadedDoc] = useState(null); // Selected document
-  const [documents, setDocuments] = useState([]);      // Available documents
+  const [uploadedDoc, setUploadedDoc] = useState(null);
+  const [documents, setDocuments] = useState([]);
   const [chatHistory, setChatHistory] = useState([
     { role: "ai", content: "Hello! Upload a PDF or select an existing document in the library. You can ask me questions, create study plans, generate quizzes, and summarize topics. 📚" }
   ]);
 
-  // Load documents on mount
   useEffect(() => {
-    fetchDocuments();
-  }, []);
+    if (loggedIn) fetchDocuments();
+  }, [loggedIn]);
 
   async function fetchDocuments() {
     try {
@@ -41,6 +43,21 @@ export default function App() {
     } catch (e) {
       alert(`Failed to delete document: ${e.message}`);
     }
+  }
+
+  function handleLogout() {
+    logout();
+    setLoggedIn(false);
+    setDocuments([]);
+    setUploadedDoc(null);
+    setChatHistory([
+      { role: "ai", content: "Hello! Upload a PDF or select an existing document in the library. You can ask me questions, create study plans, generate quizzes, and summarize topics. 📚" }
+    ]);
+  }
+
+  // Show login page if not authenticated
+  if (!loggedIn) {
+    return <LoginPage onSuccess={() => setLoggedIn(true)} />;
   }
 
   const pages = {
@@ -68,6 +85,8 @@ export default function App() {
         documents={documents}
         onRefreshDocs={fetchDocuments}
         onDeleteDoc={handleDeleteDocument}
+        username={getUsername()}
+        onLogout={handleLogout}
       />
       <main className="main-area">
         {!uploadedDoc && documents.length === 0 && activePage !== "studyplan" && (

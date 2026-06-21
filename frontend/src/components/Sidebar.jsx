@@ -17,6 +17,8 @@ export default function Sidebar({
   documents,
   onRefreshDocs,
   onDeleteDoc,
+  username,
+  onLogout,
 }) {
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -143,7 +145,21 @@ export default function Sidebar({
       </nav>
 
       <div className="sidebar-footer">
-        Powered by Ollama (LLaMA3)
+        {username && (
+          <div className="sidebar-user">
+            <span className="sidebar-user-avatar">{username[0].toUpperCase()}</span>
+            <span className="sidebar-user-name">{username}</span>
+            <button
+              id="logout-btn"
+              className="sidebar-logout-btn"
+              onClick={onLogout}
+              title="Sign out"
+            >
+              ⏏ Sign out
+            </button>
+          </div>
+        )}
+        <div className="sidebar-powered">Powered by AI · ChromaDB · FastAPI</div>
       </div>
     </aside>
   );

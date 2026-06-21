@@ -9,6 +9,18 @@ pinned: false
 
 # 🎓 AI Learning Assistant
 
+> **🚀 Live Demo:** [huggingface.co/spaces/Shreya15err2/AI-learning-assistant](https://huggingface.co/spaces/Shreya15err2/AI-learning-assistant)
+
+An AI-powered study tool that lets you upload PDFs and instantly generate flashcards, quizzes, summaries, and personalized study plans — all with **sub-second response times**.
+
+![Tech Stack](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)
+![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector%20DB-orange)
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
+![HuggingFace](https://img.shields.io/badge/Deployed%20on-HuggingFace-yellow)
+
+
 An AI-powered study tool that lets you upload PDFs and instantly generate flashcards, quizzes, summaries, and personalized study plans — all with **sub-second response times**.
 
 ![Tech Stack](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white)

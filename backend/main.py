@@ -12,6 +12,7 @@ from api.quiz import router as quiz_router
 from api.flashcards import router as flashcards_router
 from api.summary import router as summary_router
 from api.studyplan import router as studyplan_router
+from api.auth import router as auth_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -69,6 +70,7 @@ app.include_router(quiz_router, prefix="/api", tags=["quiz"])
 app.include_router(flashcards_router, prefix="/api", tags=["flashcards"])
 app.include_router(summary_router, prefix="/api", tags=["summary"])
 app.include_router(studyplan_router, prefix="/api", tags=["studyplan"])
+app.include_router(auth_router, prefix="/api", tags=["auth"])
 
 
 # Serve static frontend in production
