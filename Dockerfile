@@ -22,6 +22,9 @@ WORKDIR /app
 COPY backend/requirements.txt ./backend/
 RUN pip install --no-cache-dir -r backend/requirements.txt
 
+# Pre-download the sentence-transformers model at build time so runtime never needs internet access
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
+
 # Copy backend code
 COPY backend/ ./backend/
 
@@ -31,6 +34,11 @@ COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 # Set permissions for ChromaDB directory if needed
 RUN mkdir -p /app/backend/chroma_db && chmod 777 /app/backend/chroma_db
 RUN mkdir -p /app/backend/uploads && chmod 777 /app/backend/uploads
+
+# Set offline mode so sentence-transformers uses the cached model only
+ENV SENTENCE_TRANSFORMERS_HOME=/root/.cache/torch/sentence_transformers
+ENV TRANSFORMERS_OFFLINE=1
+ENV HF_DATASETS_OFFLINE=1
 
 # Expose the default Hugging Face Spaces port
 EXPOSE 7860
