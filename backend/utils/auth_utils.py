@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime, timedelta
 from typing import Optional
 
-from passlib.context import CryptContext
+import bcrypt
 from jose import JWTError, jwt
 
 # ── Config ──────────────────────────────────────────────────────────────────
@@ -13,8 +13,6 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
 USERS_FILE = os.path.join(os.path.dirname(__file__), "..", "users.json")
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 # ── User Store (flat JSON file) ───────────────────────────────────────────────
@@ -32,12 +30,14 @@ def _save_users(users: dict):
 
 # ── Password Helpers ──────────────────────────────────────────────────────────
 def hash_password(password: str) -> str:
-    # Bcrypt has a maximum password length of 72 bytes. We truncate to avoid warnings.
-    return pwd_context.hash(password[:72])
+    # Bcrypt max is 72 bytes — truncate to avoid any library-level errors
+    pw_bytes = password.encode("utf-8")[:72]
+    return bcrypt.hashpw(pw_bytes, bcrypt.gensalt()).decode("utf-8")
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain[:72], hashed)
+    pw_bytes = plain.encode("utf-8")[:72]
+    return bcrypt.checkpw(pw_bytes, hashed.encode("utf-8"))
 
 
 # ── User CRUD ─────────────────────────────────────────────────────────────────
