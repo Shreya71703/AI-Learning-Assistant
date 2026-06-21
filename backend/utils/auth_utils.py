@@ -32,11 +32,12 @@ def _save_users(users: dict):
 
 # ── Password Helpers ──────────────────────────────────────────────────────────
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    # Bcrypt has a maximum password length of 72 bytes. We truncate to avoid warnings.
+    return pwd_context.hash(password[:72])
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
+    return pwd_context.verify(plain[:72], hashed)
 
 
 # ── User CRUD ─────────────────────────────────────────────────────────────────
