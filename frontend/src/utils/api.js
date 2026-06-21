@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.PROD ? "/api" : "http://127.0.0.1:8001/api";
+const BASE_URL = "/api";
 
 function getAuthHeaders() {
   const token = localStorage.getItem("ai_token");
