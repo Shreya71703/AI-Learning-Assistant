@@ -1,0 +1,15 @@
+name: Keep Hugging Face Space Alive
+
+on:
+  schedule:
+    # Runs every 12 hours
+    - cron: '0 */12 * * *'
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  ping-space:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Hugging Face Space
+        run: |
+          curl -I -s https://shreya15err2-ai-learning-assistant.hf.space/ || echo "Failed to reach space"
