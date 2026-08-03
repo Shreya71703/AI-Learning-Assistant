@@ -22,8 +22,16 @@ WORKDIR /app
 COPY backend/requirements.txt ./backend/
 RUN pip install --no-cache-dir -r backend/requirements.txt
 
-# Pre-download the sentence-transformers model at build time so runtime never needs internet access
+# Create a globally accessible cache directory for Hugging Face models
+RUN mkdir -p /app/hf_cache && chmod 777 /app/hf_cache
+ENV HF_HOME=/app/hf_cache
+ENV SENTENCE_TRANSFORMERS_HOME=/app/hf_cache
+
+# Pre-download the sentence-transformers model at build time
 RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
+
+# Ensure all downloaded files are readable by the runtime user
+RUN chmod -R 777 /app/hf_cache
 
 # Copy backend code
 COPY backend/ ./backend/
@@ -35,8 +43,7 @@ COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 RUN mkdir -p /app/backend/chroma_db && chmod 777 /app/backend/chroma_db
 RUN mkdir -p /app/backend/uploads && chmod 777 /app/backend/uploads
 
-# Set offline mode so sentence-transformers uses the cached model only
-ENV SENTENCE_TRANSFORMERS_HOME=/root/.cache/torch/sentence_transformers
+# Set offline mode so it uses the cached model only
 ENV TRANSFORMERS_OFFLINE=1
 ENV HF_DATASETS_OFFLINE=1
 
