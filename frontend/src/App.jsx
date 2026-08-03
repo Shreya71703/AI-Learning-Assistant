@@ -11,14 +11,20 @@ import { api } from "./utils/api";
 import { isLoggedIn, logout, getUsername } from "./utils/auth";
 import "./styles/global.css";
 
+const WELCOME_MESSAGE = {
+  role: "ai",
+  content:
+    "Hello! I'm your AI study assistant. Upload a PDF to get started — " +
+    "I can answer questions, generate flashcards and quizzes, summarize content, " +
+    "and help you create a personalized study plan. 🎓",
+};
+
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(isLoggedIn());
   const [activePage, setActivePage] = useState("chat");
   const [uploadedDoc, setUploadedDoc] = useState(null);
   const [documents, setDocuments] = useState([]);
-  const [chatHistory, setChatHistory] = useState([
-    { role: "ai", content: "Hello! Upload a PDF or select an existing document in the library. You can ask me questions, create study plans, generate quizzes, and summarize topics. 📚" }
-  ]);
+  const [chatHistory, setChatHistory] = useState([WELCOME_MESSAGE]);
 
   useEffect(() => {
     if (loggedIn) fetchDocuments();
@@ -29,7 +35,7 @@ export default function App() {
       const docs = await api.getDocuments();
       setDocuments(docs);
     } catch (e) {
-      console.error("Failed to load documents", e);
+      console.error("Failed to load documents:", e);
     }
   }
 
@@ -39,9 +45,10 @@ export default function App() {
       if (uploadedDoc && uploadedDoc.document_id === docId) {
         setUploadedDoc(null);
       }
-      fetchDocuments();
+      await fetchDocuments();
     } catch (e) {
-      alert(`Failed to delete document: ${e.message}`);
+      // Replace alert with a more graceful error — just log for now
+      console.error("Failed to delete document:", e.message);
     }
   }
 
@@ -50,12 +57,9 @@ export default function App() {
     setLoggedIn(false);
     setDocuments([]);
     setUploadedDoc(null);
-    setChatHistory([
-      { role: "ai", content: "Hello! Upload a PDF or select an existing document in the library. You can ask me questions, create study plans, generate quizzes, and summarize topics. 📚" }
-    ]);
+    setChatHistory([WELCOME_MESSAGE]);
   }
 
-  // Show login page if not authenticated
   if (!loggedIn) {
     return <LoginPage onSuccess={() => setLoggedIn(true)} />;
   }
@@ -76,24 +80,30 @@ export default function App() {
   };
 
   return (
-    <div className="app-shell">
-      <Sidebar
-        activePage={activePage}
-        onNavigate={setActivePage}
-        uploadedDoc={uploadedDoc}
-        onSelectDoc={setUploadedDoc}
-        documents={documents}
-        onRefreshDocs={fetchDocuments}
-        onDeleteDoc={handleDeleteDocument}
-        username={getUsername()}
-        onLogout={handleLogout}
-      />
-      <main className="main-area">
-        {!uploadedDoc && documents.length === 0 && activePage !== "studyplan" && (
-          <UploadBanner />
-        )}
-        {pages[activePage]}
-      </main>
-    </div>
+    <>
+      {/* Accessibility: skip-to-content for keyboard/screen reader users */}
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+      <div className="app-shell">
+        <Sidebar
+          activePage={activePage}
+          onNavigate={setActivePage}
+          uploadedDoc={uploadedDoc}
+          onSelectDoc={setUploadedDoc}
+          documents={documents}
+          onRefreshDocs={fetchDocuments}
+          onDeleteDoc={handleDeleteDocument}
+          username={getUsername()}
+          onLogout={handleLogout}
+        />
+        <main id="main-content" className="main-area">
+          {!uploadedDoc && documents.length === 0 && activePage !== "studyplan" && (
+            <UploadBanner />
+          )}
+          {pages[activePage]}
+        </main>
+      </div>
+    </>
   );
 }

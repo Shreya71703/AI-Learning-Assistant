@@ -1,38 +1,54 @@
 # Python
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
-*.pyc
-*.egg-info/
-dist/
+*$py.class
+*.so
+.Python
 build/
-*.egg
+dist/
+*.egg-info/
 .eggs/
 
-# Virtual environment
-backend/venv/
+# Virtual environments
 venv/
-env/
 .venv/
+env/
+ENV/
 
-# Environment variables
+# Environment variables — NEVER commit secrets
 .env
-.env.local
-*.env
+backend/.env
+frontend/.env
 
-# ChromaDB data (large, regenerated from PDFs)
-backend/chroma_db/
+# User data — contains hashed passwords
+backend/users.json
+users.json
 
-# Uploaded PDFs (user data, not for repo)
+# Uploads (user-uploaded PDFs)
 backend/uploads/
+uploads/
 
-# Node / Frontend
+# ChromaDB persistent storage
+backend/chroma_db/
+chroma_db/
+
+# HuggingFace model cache
+hf_cache/
+.cache/
+
+# Node
+node_modules/
 frontend/node_modules/
-frontend/dist/
-frontend/.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# OS files
+# Build outputs
+frontend/dist/
+frontend/build/
+*.tsbuildinfo
+
+# OS
 .DS_Store
 Thumbs.db
 desktop.ini
@@ -40,16 +56,21 @@ desktop.ini
 # IDE
 .vscode/
 .idea/
-*.suo
-*.user
+*.swp
+*.swo
+*~
 
 # Logs
 *.log
-
-# Jupyter
-.ipynb_checkpoints/
+logs/
 
 # Pytest
 .pytest_cache/
-htmlcov/
 .coverage
+htmlcov/
+
+# mypy
+.mypy_cache/
+
+# Ruff
+.ruff_cache/
