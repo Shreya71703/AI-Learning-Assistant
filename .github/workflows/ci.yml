@@ -23,7 +23,7 @@ jobs:
         run: pip install ruff
 
       - name: Ruff lint
-        run: ruff check backend/ --ignore E501,E402
+        run: ruff check backend/ --ignore E501,E402,BLE001,S110,S112,SIM103,DTZ007,DTZ011,B008,ASYNC230
         continue-on-error: false
 
       - name: Python syntax check

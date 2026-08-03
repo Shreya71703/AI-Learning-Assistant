@@ -6,17 +6,21 @@ Processing pipeline:
   → deduplication → embedding → ChromaDB storage
 """
 
+import logging
 import os
 import uuid
-import shutil
-import logging
-from fastapi import APIRouter, UploadFile, File, HTTPException
 
-from services.ocr_service import extract_text_from_pdf
 from database.chroma import store_document
-from utils.text_processing import clean_text, chunk_text, remove_duplicates, merge_short_chunks
-from utils.config import MAX_UPLOAD_BYTES, MAX_UPLOAD_MB
+from fastapi import APIRouter, File, HTTPException, UploadFile
 from models.schemas import UploadResponse
+from services.ocr_service import extract_text_from_pdf
+from utils.config import MAX_UPLOAD_BYTES, MAX_UPLOAD_MB
+from utils.text_processing import (
+    chunk_text,
+    clean_text,
+    merge_short_chunks,
+    remove_duplicates,
+)
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

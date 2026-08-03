@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from rag.retriever import retrieve_chunks, retrieve_all_document_chunks
-from models.schemas import FlashcardRequest, FlashcardsResponse, Flashcard
+from models.schemas import Flashcard, FlashcardRequest, FlashcardsResponse
+from rag.retriever import retrieve_all_document_chunks, retrieve_chunks
 
 router = APIRouter()
 

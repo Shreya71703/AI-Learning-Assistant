@@ -1,6 +1,5 @@
+
 import requests
-import json
-from typing import Optional
 
 # Using literal IPv4 address to prevent Windows DNS resolution issues
 OLLAMA_BASE_URL = "http://127.0.0.1:11434"
@@ -27,7 +26,7 @@ def get_available_models() -> list:
 def generate_response(
     prompt: str,
     model: str,
-    system_prompt: Optional[str] = None,
+    system_prompt: str | None = None,
     temperature: float = 0.3,
     max_tokens: int = 512
 ) -> str:
@@ -59,12 +58,12 @@ def generate_response(
     except requests.exceptions.Timeout:
         raise RuntimeError(f"Ollama generation timed out for model {model}.")
     except requests.exceptions.RequestException as e:
-        raise RuntimeError(f"Ollama request failed: {str(e)}")
+        raise RuntimeError(f"Ollama request failed: {e!s}")
 
 def generate_with_fallback(
     prompt: str,
-    system_prompt: Optional[str] = None,
-    preferred_model: Optional[str] = None
+    system_prompt: str | None = None,
+    preferred_model: str | None = None
 ) -> tuple:
     if not is_ollama_running():
         return None, "none"

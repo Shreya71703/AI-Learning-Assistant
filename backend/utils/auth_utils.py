@@ -6,12 +6,11 @@ Password hashing: bcrypt (work factor automatically chosen by bcrypt.gensalt).
 JWT signing: HS256 with configurable secret from environment.
 """
 
-import os
 import json
-import uuid
 import logging
+import os
+import uuid
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 
 import bcrypt
 from jose import JWTError, jwt
@@ -82,7 +81,7 @@ def create_user(username: str, password: str) -> dict:
     return {"id": user_id, "username": username}
 
 
-def authenticate_user(username: str, password: str) -> Optional[dict]:
+def authenticate_user(username: str, password: str) -> dict | None:
     users = _load_users()
     # Case-insensitive username lookup
     matched_key = next((k for k in users if k.lower() == username.lower()), None)
@@ -103,7 +102,7 @@ def create_access_token(data: dict) -> str:
     return jwt.encode(to_encode, JWT_SECRET, algorithm=ALGORITHM)
 
 
-def decode_token(token: str) -> Optional[dict]:
+def decode_token(token: str) -> dict | None:
     try:
         return jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM])
     except JWTError:

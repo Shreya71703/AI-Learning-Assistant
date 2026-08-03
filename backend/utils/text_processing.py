@@ -1,5 +1,4 @@
 import re
-from typing import List
 
 
 def clean_text(text: str) -> str:
@@ -10,7 +9,7 @@ def clean_text(text: str) -> str:
     return text
 
 
-def chunk_text(text: str, chunk_size: int = 500, overlap: int = 50) -> List[str]:
+def chunk_text(text: str, chunk_size: int = 500, overlap: int = 50) -> list[str]:
     if not text.strip():
         return []
 
@@ -54,7 +53,7 @@ def chunk_text(text: str, chunk_size: int = 500, overlap: int = 50) -> List[str]
     return chunks
 
 
-def remove_duplicates(chunks: List[str]) -> List[str]:
+def remove_duplicates(chunks: list[str]) -> list[str]:
     seen = set()
     unique = []
     for chunk in chunks:
@@ -65,7 +64,7 @@ def remove_duplicates(chunks: List[str]) -> List[str]:
     return unique
 
 
-def merge_short_chunks(chunks: List[str], min_length: int = 100) -> List[str]:
+def merge_short_chunks(chunks: list[str], min_length: int = 100) -> list[str]:
     merged = []
     buffer = ""
     for chunk in chunks:

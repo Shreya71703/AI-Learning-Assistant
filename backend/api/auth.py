@@ -1,9 +1,11 @@
-from fastapi import APIRouter, HTTPException, Depends
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, validator
 from utils.auth_utils import (
-    create_user, authenticate_user,
-    create_access_token, decode_token,
+    authenticate_user,
+    create_access_token,
+    create_user,
+    decode_token,
 )
 
 router = APIRouter()

@@ -1,10 +1,11 @@
 import hashlib
 import re
+from typing import Any
+
 import chromadb
 from chromadb.config import Settings
-from typing import List, Optional, Dict, Any
-from utils.config import CHROMA_DIR, CHROMA_COLLECTION
-from services.embedding_service import embed_texts, embed_query
+from services.embedding_service import embed_query, embed_texts
+from utils.config import CHROMA_COLLECTION, CHROMA_DIR
 
 _client = None
 _collection = None
@@ -28,7 +29,7 @@ def get_collection():
         )
     return _collection
 
-def store_document(document_id: str, filename: str, chunks: List[str]) -> int:
+def store_document(document_id: str, filename: str, chunks: list[str]) -> int:
     """
     Store text chunks in ChromaDB.
     Generates MD5 hash-based IDs for deduplication.
@@ -74,7 +75,7 @@ def store_document(document_id: str, filename: str, chunks: List[str]) -> int:
     
     return len(unique_chunks)
 
-def search_chunks(query: str, top_k: int = 5, document_id: Optional[str] = None) -> List[Dict[str, Any]]:
+def search_chunks(query: str, top_k: int = 5, document_id: str | None = None) -> list[dict[str, Any]]:
     """
     Search chunks matching query, with optional document filtering.
     """
@@ -110,7 +111,7 @@ def search_chunks(query: str, top_k: int = 5, document_id: Optional[str] = None)
     chunks.sort(key=lambda x: x["similarity"], reverse=True)
     return chunks
 
-def get_document_chunks(document_id: str) -> List[Dict[str, Any]]:
+def get_document_chunks(document_id: str) -> list[dict[str, Any]]:
     """
     Fetch all chunks of a specific document, sorted by chunk_index.
     """
@@ -143,7 +144,7 @@ def delete_document(document_id: str):
     collection = get_collection()
     collection.delete(where={"document_id": document_id})
 
-def list_documents() -> List[Dict[str, str]]:
+def list_documents() -> list[dict[str, str]]:
     """
     List all unique documents stored in ChromaDB.
     """

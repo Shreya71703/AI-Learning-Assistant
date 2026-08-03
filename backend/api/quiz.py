@@ -8,12 +8,13 @@ Tiered approach:
   Tier 3 — Reject with informative error (no hardcoded garbage)
 """
 
+import logging
 import random
 import re
-import logging
+
 from fastapi import APIRouter, HTTPException
-from rag.retriever import retrieve_chunks, retrieve_all_document_chunks
-from models.schemas import QuizRequest, QuizResponse, QuizQuestion
+from models.schemas import QuizQuestion, QuizRequest, QuizResponse
+from rag.retriever import retrieve_all_document_chunks, retrieve_chunks
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

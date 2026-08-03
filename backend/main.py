@@ -8,23 +8,22 @@ Startup order:
 4. Health + root endpoints
 """
 
-import os
 import logging
+import os
 from contextlib import asynccontextmanager
 
+from api.ask import router as ask_router
+from api.auth import router as auth_router
+from api.documents import router as documents_router
+from api.flashcards import router as flashcards_router
+from api.quiz import router as quiz_router
+from api.studyplan import router as studyplan_router
+from api.summary import router as summary_router
+from api.upload import router as upload_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
-
-from api.upload import router as upload_router
-from api.ask import router as ask_router
-from api.documents import router as documents_router
-from api.quiz import router as quiz_router
-from api.flashcards import router as flashcards_router
-from api.summary import router as summary_router
-from api.studyplan import router as studyplan_router
-from api.auth import router as auth_router
+from fastapi.staticfiles import StaticFiles
 
 logging.basicConfig(
     level=logging.INFO,

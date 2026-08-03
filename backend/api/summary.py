@@ -7,13 +7,13 @@ Generates a structured document summary using extractive summarization:
 - Extracts bullet-point key concepts from definition patterns
 """
 
-import re
-import math
 import logging
+import re
 from collections import Counter
+
 from fastapi import APIRouter, HTTPException
-from rag.retriever import retrieve_chunks, retrieve_all_document_chunks
 from models.schemas import SummaryRequest, SummaryResponse
+from rag.retriever import retrieve_all_document_chunks, retrieve_chunks
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

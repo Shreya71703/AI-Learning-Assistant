@@ -1,6 +1,5 @@
+
 from sentence_transformers import SentenceTransformer
-from typing import List
-import numpy as np
 
 _model = None
 MODEL_NAME = "all-MiniLM-L6-v2"
@@ -13,13 +12,13 @@ def get_model() -> SentenceTransformer:
     return _model
 
 
-def embed_texts(texts: List[str]) -> List[List[float]]:
+def embed_texts(texts: list[str]) -> list[list[float]]:
     model = get_model()
     embeddings = model.encode(texts, show_progress_bar=False)
     return embeddings.tolist()
 
 
-def embed_query(query: str) -> List[float]:
+def embed_query(query: str) -> list[float]:
     model = get_model()
     embedding = model.encode([query], show_progress_bar=False)
     return embedding[0].tolist()

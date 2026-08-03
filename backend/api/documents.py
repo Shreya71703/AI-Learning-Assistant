@@ -1,6 +1,7 @@
 import os
+
+from database.chroma import delete_document, list_documents
 from fastapi import APIRouter, HTTPException
-from database.chroma import list_documents, delete_document
 
 router = APIRouter()
 
@@ -12,7 +13,7 @@ async def get_all_documents():
         docs = list_documents()
         return docs
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch documents: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch documents: {e!s}")
 
 @router.delete("/documents/{document_id}")
 async def remove_document(document_id: str):
@@ -32,4 +33,4 @@ async def remove_document(document_id: str):
                         
         return {"message": "Document and chunks successfully deleted"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to delete document: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete document: {e!s}")

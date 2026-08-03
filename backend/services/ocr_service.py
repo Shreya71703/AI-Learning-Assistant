@@ -1,9 +1,9 @@
 import os
 import re
+
 import pytesseract
-from pypdf import PdfReader
 from pdf2image import convert_from_path
-from typing import Tuple
+from pypdf import PdfReader
 
 TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 POPPLER_PATH = r"C:\poppler\poppler-26.02.0\Library\bin"
@@ -11,7 +11,7 @@ POPPLER_PATH = r"C:\poppler\poppler-26.02.0\Library\bin"
 if os.name == "nt" and os.path.exists(TESSERACT_PATH):
     pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
 
-def extract_text_from_pdf(pdf_path: str) -> Tuple[str, int]:
+def extract_text_from_pdf(pdf_path: str) -> tuple[str, int]:
     """
     Extract text from a PDF. Try extracting text instantly first.
     Falls back to slow OCR only if the PDF is scanned (contains no text layer).
@@ -42,7 +42,7 @@ def extract_text_from_pdf(pdf_path: str) -> Tuple[str, int]:
             poppler_path=POPPLER_PATH if os.name == "nt" else None
         )
     except Exception as e:
-        raise RuntimeError(f"Failed to convert PDF to images: {str(e)}")
+        raise RuntimeError(f"Failed to convert PDF to images: {e!s}")
 
     all_text = []
     for i, page_image in enumerate(pages):
@@ -55,7 +55,7 @@ def extract_text_from_pdf(pdf_path: str) -> Tuple[str, int]:
             if text.strip():
                 all_text.append(f"[Page {i + 1}]\n{text.strip()}")
         except Exception as e:
-            all_text.append(f"[Page {i + 1}] OCR failed: {str(e)}")
+            all_text.append(f"[Page {i + 1}] OCR failed: {e!s}")
 
     return clean_ocr_text("\n\n".join(all_text)), len(pages)
 

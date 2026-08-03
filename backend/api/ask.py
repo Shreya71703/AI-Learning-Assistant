@@ -9,11 +9,12 @@ Flow:
 5. Fall back to direct retrieval if Gemini is unavailable
 """
 
-import os
 import logging
+import os
+
 from fastapi import APIRouter, HTTPException
-from rag.retriever import retrieve_chunks, build_context
-from models.schemas import QuestionRequest, AnswerResponse
+from models.schemas import AnswerResponse, QuestionRequest
+from rag.retriever import build_context, retrieve_chunks
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
